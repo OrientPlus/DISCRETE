@@ -10,6 +10,7 @@ DEIJ::DEIJ(string path)
 	if (!fs::exists(path))
 	{
 		cout << "\nA file with that name does not exist!" << endl;
+		system("pause");
 		exit(-1);
 	}
 	input.open(path);
@@ -47,17 +48,18 @@ void DEIJ::header()
 			if (data[i][j] == 0)
 			{
 				data[i][j] = INF;
-				cout << data[i][j] << " ";
+				//cout << data[i][j] << " ";
 				continue;
 			}
 			if (data[i][j] < 0)
 			{
 				cout << "\nERROR! Negative value!" << endl;
+				system("pause");
 				exit(-1);
 			}
-			cout << data[i][j] << "          ";
+			//cout << data[i][j] << "          ";
 		}
-		cout << endl;
+		//cout << endl;
 	}
 
 	cout << "Enter the starting vertex: ";
@@ -70,21 +72,27 @@ void DEIJ::header()
 	length[start_vertex] = 0;
 
 	int min_len = INF, current_vertex = start_vertex;
-	vector<int>::iterator it = data[current_vertex].begin();
+	//vector<int>::iterator it = data[current_vertex].begin();
 	for (int i = 0; i < gr_size; i++)
 	{
 		for (int j = 0; j < gr_size; j++)
 		{
-			if (it[j] == INF || visited[j] == true)
+			if (current_vertex == -1)
+				break;
+
+			if (data[current_vertex][j] == INF || visited[j] == true)
 				continue;
-			if (it[j] < min_len)
-				min_len = it[j];
 			
-			if (length[j] > length[current_vertex] + it[j])
-				length[j] = length[current_vertex] + it[j];
+			if (length[j] > length[current_vertex] + data[current_vertex][j])
+				length[j] = length[current_vertex] + data[current_vertex][j];
 		}
-		it = get_next_vertex(it);
-		visited[current_vertex] = true;
+		if (current_vertex != -1)
+		{
+			visited[current_vertex] = true;
+			current_vertex = get_next_vertex(current_vertex);
+		}
+		else
+			break;
 	}
 
 	print_result();
@@ -92,26 +100,45 @@ void DEIJ::header()
 
 void DEIJ::print_result()
 {
-	cout << "\nRESULT FROM " << start_vertex << " VERTEX: ";
+	cout << "\nRESULT FROM " << start_vertex << " VERTEX: " << endl;
 	for (int i = 0; i < gr_size; i++)
-		cout << length[i] << "  ";
+	{
+		cout << start_vertex << " --> " << i << " == " << length[i] << " || ";
+		if (i % 5 == 0 && i!=0)
+			cout << endl;
+	}
 	
 	return;
 }
 
-vector<int>::iterator DEIJ::get_next_vertex(vector<int>::iterator current)
+int DEIJ::get_next_vertex(int current)
 {
-	vector<int>::iterator it;
+	static int old_vertex = INF;
+	if (old_vertex == INF)
+		old_vertex = current;
+
+	for (int i = 0; i < gr_size; i++)
+	{
+		if (data[old_vertex][i]!= INF && visited[i] == false)
+		{
+			break;
+		}
+		if (i == gr_size - 1)
+		{
+			old_vertex = current;
+			break;
+		}
+	}
+
 	int min = INF, min_ind = -1;
 	for (int i = 0; i < gr_size; i++)
 	{
-		if (current[i] < min)
+		if (data[old_vertex][i] < min && visited[i] == false)
 		{
-			min = current[i];
+			min = data[old_vertex][i];
 			min_ind = i;
 		}
 	}
-	
-	it = data[min_ind].begin();
-	return it;
+
+	return min_ind;
 }

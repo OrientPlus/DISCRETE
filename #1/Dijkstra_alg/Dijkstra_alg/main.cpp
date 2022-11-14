@@ -4,9 +4,10 @@
 
 int main(int argc, char* argv)
 {
-	DEIJ deij("test0.txt");
+	DEIJ deij("test5.txt");
 	deij.header();
 
+	std::cout << std::endl;
 	system("pause");
 	return 0;
 }

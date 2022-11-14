@@ -28,5 +28,5 @@ private:
 	std::vector<int> result;
 
 	void print_result();
-	std::vector<int>::iterator get_next_vertex(std::vector<int>::iterator current);
+	int get_next_vertex(int current);
 };
