@@ -1,9 +1,9 @@
-#include "Deij_alg.h"
+#include "Ford-Bellman.h"
 
 namespace fs = std::filesystem;
 using namespace std;
 
-DEIJ::DEIJ(string path)
+FB::FB(string path)
 {
 	gr_size = 0;
 	start_vertex = 0;
@@ -14,30 +14,27 @@ DEIJ::DEIJ(string path)
 		exit(-1);
 	}
 	input.open(path);
-	
+
 	//получаем размер и выделяем память
 	input >> gr_size;
-	visited.reserve(gr_size);
 	length.reserve(gr_size);
-	
+
 	data.resize(gr_size);
 	for (int j = 0; j < gr_size; j++)
 		data[j].resize(gr_size);
 	for (int i = 0; i < gr_size; i++)
 	{
 		data[i].push_back(INF);
-		
 		length.push_back(INF);
-		visited.push_back(false);
 	}
 }
 
-DEIJ::~DEIJ()
+FB::~FB()
 {
 
 }
 
-void DEIJ::header()
+void FB::header()
 {
 	//заполняем данные о графе
 	for (int i = 0; i < gr_size; i++)
@@ -48,18 +45,11 @@ void DEIJ::header()
 			if (data[i][j] == 0)
 			{
 				data[i][j] = INF;
-				//cout << data[i][j] << " ";
 				continue;
 			}
 			if (data[i][j] < 0)
-			{
-				cout << "\nERROR! Negative value!" << endl;
-				system("pause");
-				exit(-1);
-			}
-			//cout << data[i][j] << "          ";
+				cout << "WARNING! Negative value!" << endl;
 		}
-		//cout << endl;
 	}
 
 	cout << "Enter the starting vertex: ";
@@ -70,29 +60,48 @@ void DEIJ::header()
 		start_vertex = 0;
 	}
 	length[start_vertex] = 0;
-
+	vector<unsigned long long> old_length;
 	auto begin = chrono::steady_clock::now();
 	int current_vertex = start_vertex;
-	for (int i = 0; i < gr_size; i++)
+	bool break_fl = false;
+	for (int i = 0; i < gr_size-1; i++)
 	{
-		for (int j = 0; j < gr_size; j++)
+		if (break_fl)
 		{
-			if (current_vertex == -1)
-				break;
-
-			if (data[current_vertex][j] == INF || visited[j] == true)
-				continue;
-			
-			if (length[j] > length[current_vertex] + data[current_vertex][j])
-				length[j] = length[current_vertex] + data[current_vertex][j];
-		}
-		if (current_vertex != -1)
-		{
-			visited[current_vertex] = true;
-			current_vertex = get_next_vertex(current_vertex);
-		}
-		else
+			exit_it = i;
 			break;
+		}
+
+		for (int j = 0; j <= i; j++)
+		{
+			//бежим по матрице смежности
+			for (int k = 0; k < gr_size; k++)
+			{
+				for (int f = 0; f < gr_size; f++)
+				{
+					if (data[k][f] != INF)
+					{
+						if (length[k] > length[f] + data[k][f])
+							length[k] = length[f] + data[k][f];
+					}
+				}
+			}
+		}
+
+		//завершаем алгоритм раньше, если уже найдены оптимальные пути
+		if (i%5==0 && i != 0)
+		{
+			for (int k = 0; k < gr_size; k++)
+			{
+				if (k == gr_size - 1 && old_length[k] == length[k])
+					break_fl = true;
+				if (old_length[k] == length[k])
+					continue;
+				else
+					break;
+			}
+		}
+		old_length = length;
 	}
 
 	auto end = chrono::steady_clock::now();
@@ -100,7 +109,7 @@ void DEIJ::header()
 	print_result(exec_time);
 }
 
-void DEIJ::print_result(auto exec_time)
+void FB::print_result(auto exec_time)
 {
 	ofstream out("output.txt");
 	cout << "\nRESULT FROM " << start_vertex << " VERTEX: " << endl;
@@ -123,50 +132,20 @@ void DEIJ::print_result(auto exec_time)
 			out << endl;
 		}
 	}
-	
+
 	cout << "\nExecution time: ";
 	out << "\nExecution time: ";
 	if (exec_time.count() > 1000)
 	{
-		cout << exec_time.count()/1000 << " seconds" << endl;
+		cout << exec_time.count() / 1000 << " seconds" << endl;
 		out << exec_time.count() / 1000 << " seconds" << endl;
 	}
 	else {
 		cout << exec_time.count() << " milliseconds." << endl;
 		out << exec_time.count() << " milliseconds." << endl;
 	}
-	
+
+	cout << "Exit on " << exit_it << " iteration";
+
 	return;
-}
-
-int DEIJ::get_next_vertex(int current)
-{
-	static int old_vertex = INF;
-	if (old_vertex == INF)
-		old_vertex = current;
-
-	for (int i = 0; i < gr_size; i++)
-	{
-		if (data[old_vertex][i]!= INF && visited[i] == false)
-		{
-			break;
-		}
-		if (i == gr_size - 1)
-		{
-			old_vertex = current;
-			break;
-		}
-	}
-
-	int min = INF, min_ind = -1;
-	for (int i = 0; i < gr_size; i++)
-	{
-		if (data[old_vertex][i] < min && visited[i] == false)
-		{
-			min = data[old_vertex][i];
-			min_ind = i;
-		}
-	}
-
-	return min_ind;
 }

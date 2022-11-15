@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -9,23 +8,20 @@
 #define INF INT_MAX
 
 
-class DEIJ {
+class FW {
 
 public:
-	DEIJ(std::string path);
-	~DEIJ();
+	FW(std::string path);
+	~FW();
 
 	void header();
 private:
 	std::fstream input;
 	int gr_size,
-		start_vertex;
+		start_vertex, exit_it;
 
 	std::vector<std::vector<int>> data;
 	std::vector<unsigned long long> length;
-	std::vector<bool> visited;
-	std::vector<int> result;
 
 	void print_result(auto exec_time);
-	int get_next_vertex(int current);
 };
