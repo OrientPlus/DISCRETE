@@ -48,17 +48,9 @@ void FW::header()
 				continue;
 			}
 			if (data[i][j] < 0)
-				cout << "WARNING! Negative value!" << endl;
+				cout << "WARNING! Negative cycle!" << endl;
 		}
 	}
-
-	if (start_vertex >= gr_size)
-	{
-		cout << "There is no vertex with this number! Maximum vertex number: " << gr_size - 1 << " The default value of 0 will be used.";
-		start_vertex = 0;
-	}
-	length[start_vertex] = 0;
-	vector<unsigned long long> old_length;
 
 	auto begin = chrono::steady_clock::now();
 	int current_vertex = start_vertex;
@@ -82,8 +74,6 @@ void FW::header()
 void FW::print_result(auto exec_time)
 {
 	ofstream out("output.txt");
-	cout << "\nRESULT FROM " << start_vertex << " VERTEX: " << endl;
-	out << "\nRESULT FROM " << start_vertex << " VERTEX: " << endl;
 	for (int i = 0; i < gr_size; i++)
 	{
 		for (int j = 0; j < gr_size; j++)

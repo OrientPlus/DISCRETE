@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv)
 {
-	FB fb("test5.txt");
+	FB fb("test4.txt");
 	fb.header();
 
 	std::cout << std::endl;

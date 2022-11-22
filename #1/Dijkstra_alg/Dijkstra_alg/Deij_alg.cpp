@@ -26,7 +26,6 @@ DEIJ::DEIJ(string path)
 	for (int i = 0; i < gr_size; i++)
 	{
 		data[i].push_back(INF);
-		
 		length.push_back(INF);
 		visited.push_back(false);
 	}
@@ -48,7 +47,6 @@ void DEIJ::header()
 			if (data[i][j] == 0)
 			{
 				data[i][j] = INF;
-				//cout << data[i][j] << " ";
 				continue;
 			}
 			if (data[i][j] < 0)
@@ -57,9 +55,7 @@ void DEIJ::header()
 				system("pause");
 				exit(-1);
 			}
-			//cout << data[i][j] << "          ";
 		}
-		//cout << endl;
 	}
 
 	cout << "Enter the starting vertex: ";
@@ -145,6 +141,7 @@ int DEIJ::get_next_vertex(int current)
 	if (old_vertex == INF)
 		old_vertex = current;
 
+	int min = INF, min_ind = -1;
 	for (int i = 0; i < gr_size; i++)
 	{
 		if (data[old_vertex][i]!= INF && visited[i] == false)
@@ -153,12 +150,19 @@ int DEIJ::get_next_vertex(int current)
 		}
 		if (i == gr_size - 1)
 		{
-			old_vertex = current;
-			break;
+			for (int j = 0; j < gr_size; j++)
+			{
+				if (data[old_vertex][j] < min)
+				{
+					min = data[old_vertex][j];
+					min_ind = j;
+				}
+			}
+			old_vertex = min_ind;
 		}
 	}
 
-	int min = INF, min_ind = -1;
+	min = INF; min_ind = -1;
 	for (int i = 0; i < gr_size; i++)
 	{
 		if (data[old_vertex][i] < min && visited[i] == false)

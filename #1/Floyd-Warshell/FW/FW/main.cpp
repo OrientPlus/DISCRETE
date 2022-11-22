@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv)
 {
-	FW fw("test5.txt");
+	FW fw("test3.txt");
 	fw.header();
 
 	std::cout << std::endl;

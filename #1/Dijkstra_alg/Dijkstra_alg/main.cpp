@@ -2,8 +2,9 @@
 
 #include "Deij_alg.h"
 
-int main(int argc, char* argv)
+int main()
 {
+
 	DEIJ deij("test5.txt");
 	deij.header();
 
