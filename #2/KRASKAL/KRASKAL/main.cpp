@@ -3,7 +3,7 @@
 
 int main()
 {
-	GRAPH gr("test5.txt");
+	GRAPH gr("test0.txt");
 	gr.fill_graph();
 	gr.kraskal();
 

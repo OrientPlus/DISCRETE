@@ -7,7 +7,7 @@
 #include <chrono>
 #include <stack>
 
-#define edge pair<int,int>
+#define INF INT_MAX
 
 using std::vector;
 using std::string;
@@ -17,26 +17,23 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-#define edge pair<int,int>
+#define edge pair<int, int>
 
 class GRAPH {
 private:
     fstream in, out;
-    vector<pair<int, edge>> G; // graph
+    vector<vector<int>> G; // graph
     vector<pair<int, edge>> T; // mst
-    
+
     vector<bool> picked;
 
     string file_name;
-    int* parent, weight_of_mst;
+    int weight_of_mst;
     int gr_size; // number of vertices/nodes in graph
 public:
     GRAPH(string _file_name);
-    void fill_graph();
     int check_connectivity();
 
-    int find_set(int i);
-    void union_set(int u, int v);
-    void kraskal();
+    void prima();
     void print();
 };

@@ -6,7 +6,7 @@ GRAPH::GRAPH(string _file_name) {
     in >> gr_size;
     parent = new int[gr_size];
 
-    visited.resize(gr_size);
+    picked.resize(gr_size);
     //i 0 1 2 3 4 5
     //parent[i] 0 1 2 3 4 5
     for (int i = 0; i < gr_size; i++)
@@ -27,8 +27,6 @@ void GRAPH::fill_graph()
             in >> weight;
             if (weight == 0)
                 continue;
-            if (weight < 0)
-                cout << "INF\n";
             G.push_back(make_pair(weight, edge(i, j)));
         }
     }
@@ -51,7 +49,7 @@ void GRAPH::union_set(int u, int v) {
     parent[u] = parent[v];
 }
 void GRAPH::kraskal() {
-    int i, uRep, vRep;
+    int uRep, vRep;
     auto begin = std::chrono::steady_clock::now();
     int conn = check_connectivity();
     auto end = std::chrono::steady_clock::now();
@@ -64,10 +62,9 @@ void GRAPH::kraskal() {
         return;
     }
   
-
     begin = std::chrono::steady_clock::now();
     sort(G.begin(), G.end()); // increasing weight
-    for (i = 0; i < G.size(); i++) {
+    for (int i = 0; i < G.size(); i++) {
         uRep = find_set(G[i].second.first);
         vRep = find_set(G[i].second.second);
         if (uRep != vRep) {
@@ -88,44 +85,40 @@ void GRAPH::kraskal() {
 
 int GRAPH::check_connectivity()
 {
-    in.open(file_name);
-    vector<vector<int>> matrix;
-    matrix.resize(gr_size);
-    for (int i = 0; i < gr_size; i++)
-        matrix[i].resize(gr_size);
-
-    in.seekg(1);
-    for (int i = 0; i < gr_size; i++)
-    {
-        for (int j = 0; j < gr_size; j++)
-        {
-            in >> matrix[i][j];
-        }
-    }
-
-    std::vector<int> st;//исправить на инты и все ок
-    visited[0] = true;
+    std::vector<int> st;
+    bool fl = false;
+    picked[0] = true;
     for (int i = 0; i < G.size(); i++)
     {
-        if (matrix[0][i] != 0)
-            st.push_back(i); //и тута тоже на i заменить 
+        if (G[i].second.first == 0)
+            st.push_back(G[i].second.second);
+        else
+            break;
     }
-    while (!st.empty())
+    int _i = 0, it;
+    for (_i; !st.empty(); _i++)
     {
-        int it = st[st.size() - 1];
+        it = st[st.size()-1];
         st.pop_back();
-        visited[it] = true;
-        for (int i = 0; i < gr_size; i++)
+        picked[it] = true;
+        fl = false;
+        for (int i = 0; i < G.size(); i++)
         {
-            if (matrix[it][i] != 0 && visited[i] == false && find(st.begin(), st.end(), i) == st.end())
+            if (G[i].second.first != it && fl == false)
+                continue;
+            else if (G[i].second.first != it && fl == true)
+                break;
+
+            if (picked[G[i].second.second] == false && find(st.begin(), st.end(), G[i].second.second) == st.end())
             {
-                st.push_back(i);
+                st.push_back(G[i].second.second);
+                fl = true;
             }
         }
     }
     for (int i = 0; i < gr_size; i++)
     {
-        if (visited[i] == false)
+        if (picked[i] == false)
             return 1;
     }
     return 0;
